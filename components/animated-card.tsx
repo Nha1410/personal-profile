@@ -11,7 +11,7 @@ interface AnimatedCardProps {
 
 export function AnimatedCard({ children, className }: AnimatedCardProps) {
   return (
-    <Card className={cn("transition-all duration-300 hover:shadow-lg", className)}>
+    <Card className={cn("transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden", className)}>
       {children}
     </Card>
   )

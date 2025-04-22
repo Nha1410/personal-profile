@@ -1,33 +1,47 @@
 "use client"
 
+import { useRef } from "react"
+
 import { useState, useEffect } from "react"
 import { Progress } from "@/components/ui/progress"
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer"
-import { useAnimation } from "@/components/animation-provider"
+import { cn } from "@/lib/utils"
 
 interface AnimatedProgressProps {
   value: number
   label: string
+  color?: string
 }
 
-export function AnimatedProgress({ value, label }: AnimatedProgressProps) {
+export function AnimatedProgress({ value, label, color }: AnimatedProgressProps) {
   const [progress, setProgress] = useState(0)
   const { ref, isIntersecting } = useIntersectionObserver()
-  const { animationsEnabled } = useAnimation()
-  const [hasAnimated, setHasAnimated] = useState(false)
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
-    if (isIntersecting && animationsEnabled && !hasAnimated) {
+    if (isIntersecting && !hasAnimated.current) {
       const timer = setTimeout(() => {
         setProgress(value)
-        setHasAnimated(true)
+        hasAnimated.current = true
       }, 200)
       return () => clearTimeout(timer)
-    } else if (!animationsEnabled || hasAnimated) {
-      setProgress(value)
     }
     return undefined
-  }, [isIntersecting, value, animationsEnabled, hasAnimated])
+  }, [isIntersecting, value])
+
+  // Determine color class based on skill name
+  const getColorClass = () => {
+    if (color) return color
+
+    const skillName = label.toLowerCase()
+    if (skillName.includes("php")) return "bg-theme-orange"
+    if (skillName.includes("golang")) return "bg-theme-blue"
+    if (skillName.includes("english")) return "bg-theme-purple"
+    if (skillName.includes("git")) return "bg-theme-red"
+    if (skillName.includes("sql")) return "bg-theme-green"
+
+    return "bg-primary"
+  }
 
   return (
     <div
@@ -39,7 +53,7 @@ export function AnimatedProgress({ value, label }: AnimatedProgressProps) {
         <span className="text-sm font-medium">{label}</span>
         <span className="text-xs text-gray-500">{progress}%</span>
       </div>
-      <Progress value={progress} className="h-2 transition-all duration-1000 ease-out" />
+      <Progress value={progress} className={cn("h-2 transition-all duration-1000 ease-out", getColorClass())} />
     </div>
   )
 }
