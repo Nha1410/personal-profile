@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Progress } from "@/components/ui/progress"
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer"
+import { useAnimation } from "@/components/animation-provider"
 
 interface AnimatedProgressProps {
   value: number
@@ -12,16 +13,21 @@ interface AnimatedProgressProps {
 export function AnimatedProgress({ value, label }: AnimatedProgressProps) {
   const [progress, setProgress] = useState(0)
   const { ref, isIntersecting } = useIntersectionObserver()
+  const { animationsEnabled } = useAnimation()
+  const [hasAnimated, setHasAnimated] = useState(false)
 
   useEffect(() => {
-    if (isIntersecting) {
+    if (isIntersecting && animationsEnabled && !hasAnimated) {
       const timer = setTimeout(() => {
         setProgress(value)
+        setHasAnimated(true)
       }, 200)
       return () => clearTimeout(timer)
+    } else if (!animationsEnabled || hasAnimated) {
+      setProgress(value)
     }
     return undefined
-  }, [isIntersecting, value])
+  }, [isIntersecting, value, animationsEnabled, hasAnimated])
 
   return (
     <div

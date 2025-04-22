@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode } from "react"
+import type { ReactNode } from "react"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
@@ -11,12 +11,7 @@ interface AnimatedCardProps {
 
 export function AnimatedCard({ children, className }: AnimatedCardProps) {
   return (
-    <Card
-      className={cn(
-        "transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
-        className
-      )}
-    >
+    <Card className={cn("transition-all duration-300 hover:shadow-lg", className)}>
       {children}
     </Card>
   )
